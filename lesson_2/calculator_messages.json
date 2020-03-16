@@ -1,0 +1,18 @@
+{
+  "language": "Press 1) for English; 2) для Української.",
+  "english": {
+    "welcome": "Welcome to Calculator!",
+    "whatOperation": "What operation would you like to perform?\n1) Add 2) Substract 3) Multiply 4) Divide",
+    "firstNumMessage": "What's the first number?",
+    "invalidNumMessage": "Hmm... that doest't look like a valid number.",
+    "onlyYesOrNo": "You can chooose only 'y' or 'n'. Please start over if you need."
+  },
+  "ukrainian": {
+    "welcome": "Раді бачити вас у Калькуляторі!",
+    "whatOperation": "Яку операцію ви б хотіли виконати?\n1) Додавання 2) Віднімання 3) Множення 4) Ділення",
+    "firstNumMessage": "Яка перша цифра?",
+    "secondNumMessage" : "Яка друга цифра?", 
+    "invalidNumMessage": "Хмм... Це не виглядає як валідне число",
+    "onlyYesOrNo": "Ви можете вибрати тільки 'y' чи 'n'. Будь-ласка, почніть заново, якшо вам треба здійснити іншу калькуляцію."
+  }
+}
