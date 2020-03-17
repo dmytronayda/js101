@@ -1,0 +1,9 @@
+{
+  "welcome": "Welcome to your personal car loan calculator!",
+  "vehiclePrice" : "💶 - Please specify the Vehicle Price in €:",
+  "notANumber" : "Please input a positive number (e.g. 15000 or 4.5).", 
+  "percentageRate" : "％ - Please specify Annual Percentage rate as a number (e.g. 5 for 5%, 4.3 for 4.3%):",
+  "loanDuration" : "⏰ - Please specify loan duration in years as a number (e.g 2 for 2 yrs, 2.5 for 30 months):",
+  "monthlySpent" : "Your monthly payment will be: €", 
+  "onlyYesOrNo": "Please choose either 'y' or 'n'!"
+}
