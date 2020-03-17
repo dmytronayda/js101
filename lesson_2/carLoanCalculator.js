@@ -58,6 +58,8 @@ do {
   // print the result to console
   prompt(MESSAGES.monthlySpent + financial(monthlyPayment));
 
+  // check if user wants to calculate another loan option
+  let answer = readline.question();
   do {
     prompt('Want to calculate other vehicle or loan options? [y/n]');
     answer = readline.question();
