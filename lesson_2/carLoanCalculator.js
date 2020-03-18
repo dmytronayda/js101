@@ -8,21 +8,59 @@ function prompt(message) {
 function invalidNumber(number) {
   return number.trimStart() === '' ||
     Number.isNaN(Number(number)) ||
-    number.trimStart() < 0; // check if user input is less than 0
+    Number(number) <= 0;
 }
 
-// make a number with 2 floating points for monthly payments output
 function financial(x) {
   return Number.parseFloat(x).toFixed(2);
 }
 
-// welcome customer at the loan calculator
+function toMonthlyInterest(num) {
+  return num / 12 / 100;
+}
+
+function roundHalf(num) {
+  return Math.round(num * 2) / 2;
+}
+
+function toMonths(years) {
+  return roundHalf(years) * 12;
+}
+
+function hasYOrN(str) {
+  return str.match(/[yYnN]/);
+}
+let proceed = false;
+
+function isNewCalculation() {
+  prompt('Want to calculate other loan options? [y/n]');
+  let answer = readline.question();
+  if (answer.match(/[yY]/)) {
+    proceed = true;
+  } else if (answer.match(/[nN]/)) {
+    proceed = false;
+  }
+
+  while (!hasYOrN(answer)) {
+    prompt("Please enter only 'y' or 'n'");
+    answer = readline.question();
+    if (answer.match(/[yY]/)) {
+      proceed = true;
+    } else if (answer.match(/[nN]/)) {
+      proceed = false;
+    }
+  }
+}
+
+function calculatePayment(vehiclePrice, monthlyInterestRate, loanDuration) {
+  return vehiclePrice * (monthlyInterestRate /
+    (1 - Math.pow((1 + monthlyInterestRate), (-toMonths(loanDuration)))));
+}
+
 prompt(MESSAGES.welcome);
-let proceed = ''; // used to define whether user wants
-//to calculate another loan option
 
 do {
-  // ask for loan amount
+
   prompt(MESSAGES.vehiclePrice);
   let vehiclePrice = readline.question();
   while (invalidNumber(vehiclePrice)) {
@@ -30,46 +68,28 @@ do {
     vehiclePrice = readline.question();
   }
 
-  // ask for Annual Percentage Rate (APR)
   prompt(MESSAGES.percentageRate);
-
   let annualInterestRate = readline.question();
   while (invalidNumber(annualInterestRate)) {
     prompt(MESSAGES.notANumber);
     annualInterestRate = readline.question();
   }
 
-  /* convert annual rate to monthly:
-     1) divide by 12 months
-     2) divide by 100 to make percents from full number input
-  */
-  let monthlyInterestRate = annualInterestRate / 12 / 100;
+  let monthlyInterestRate = toMonthlyInterest(annualInterestRate);
 
-  // ask for loan duration in years
   prompt(MESSAGES.loanDuration);
-  let loanDurationInYears = readline.question();
+  let loanDuration = readline.question();
+  while (invalidNumber(loanDuration)) {
+    prompt(MESSAGES.notANumber);
+    loanDuration = readline.question();
+  }
 
-  let loanDurationInMonts = loanDurationInYears * 12;
-
-  //  monthly payment formula
-  let monthlyPayment = vehiclePrice * (monthlyInterestRate /
-    (1 - Math.pow((1 + monthlyInterestRate), (-loanDurationInMonts))));
-
-  // print the result to console
+  let monthlyPayment = calculatePayment(vehiclePrice,
+    monthlyInterestRate, loanDuration);
   prompt(MESSAGES.monthlySpent + financial(monthlyPayment));
 
-  // check if user wants to calculate another loan option
-  let answer = readline.question();
-  do {
-    prompt('Want to calculate other vehicle or loan options? [y/n]');
-    answer = readline.question();
+  isNewCalculation();
 
-    if (answer === 'y') {
-      proceed = 'y';
-    } else if (answer === 'n') {
-      break;
-    }
-  } while (answer !== 'y' && answer !== 'n');
+} while (proceed === true);
 
-
-} while (proceed === 'y');
+console.clear();
