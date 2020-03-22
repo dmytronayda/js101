@@ -3,9 +3,33 @@ const VALID_CHOICES = [
   ['r', 'rock'],
   ['p', 'paper'],
   ['s', 'scissors'],
-  ['S', 'spock'],
+  ['k', 'spock'],
   ['l', 'lizard']
 ];
+
+const WINNING_COMBOS = {
+  rock: ['scissors', 'lizard'],
+  paper: ['rock', 'spock'],
+  scissors: ['paper', 'lizard'],
+  lizard: ['paper', 'spock'],
+  spock: ['rock', 'scissors'],
+};
+
+const STARTING_SCORES = {
+  humanCount : 0,
+  computerCount : 0,
+  ties : 0
+}
+
+function returnIndexVal(val, array) {
+  let explanation = '';
+  array.forEach(element => {
+    if (element[0] === val) {
+      explanation = element[1];
+    }
+  });
+  return explanation;
+}
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -27,110 +51,85 @@ function getInnerArrIndex(arr) {
   return newArr;
 }
 
-function rockWins(choise1, choise2) {
-  return (choise1 === 'r' && choise2 === 's') ||
-    (choise1 === 'r' && choise2 === 'l');
-}
 
-function paperWins(choise1, choise2) {
-  return (choise1 === 'p' && choise2 === 'r') ||
-    (choise1 === 'p' && choise2 === 'S');
-}
-
-function scissorsWin(choise1, choise2) {
-  return (choise1 === 's' && choise2 === 'p') ||
-    (choise1 === 's' && choise2 === 'l');
-}
-
-function spockWins(choise1, choise2) {
-  return (choise1 === 'S' && choise2 === 's') ||
-    (choise1 === 'S' && choise2 === 'r');
-}
-
-function lizardWins(choise1, choise2) {
-  return (choise1 === 'l' && choise2 === 'p') ||
-    (choise1 === 'l' && choise2 === 'S');
+function playerWins(choice, computerChoice) {
+  return WINNING_COMBOS[choice].includes(computerChoice);
 }
 
 function returnWinner(choice, computerChoice) {
-
-  if (rockWins(choice, computerChoice) ||
-    paperWins(choice, computerChoice) ||
-    scissorsWin(choice, computerChoice) ||
-    spockWins(choice, computerChoice) ||
-    lizardWins(choice, computerChoice)) {
+  if (playerWins(choice, computerChoice)) {
     return ('human');
-  } else if (rockWins(computerChoice, choice) ||
-    paperWins(computerChoice, choice) ||
-    scissorsWin(computerChoice, choice) ||
-    spockWins(computerChoice, choice) ||
-    lizardWins(computerChoice, choice)) {
+  } else if (playerWins(computerChoice, choice)) {
     return ('computer');
   } else {
     return ('tie');
   }
 }
 
-
-let humanCount = 0;
-let computerCount = 0;
-let ties = 0;
-
-function addResult(str) {
+function addResult(str, obj) {
   if (str === 'human') {
-    humanCount += 1;
+    obj.humanCount += 1;
   } else if (str === 'computer') {
-    computerCount += 1;
+    obj.computerCount += 1;
   } else if (str === 'tie') {
-    ties += 1;
+    obj.ties += 1;
   }
 }
 
-function displayWinner() {
-  if (humanCount > computerCount) {
+function displayWinner(obj) {
+  if (obj.humanCount > obj.computerCount) {
     prompt('You win! 😎🥳');
-  } else if (humanCount < computerCount) {
+  } else if (obj.humanCount < obj.computerCount) {
     prompt('Ugh-ho... Machine wins. 😔');
   } else {
     prompt('Tie?! For reals?? 😕');
   }
 }
 
+prompt("Welcome to Rock, Paper, Scissors, Lizard, Spock! 🎰 You have to play 5 rounds.");
+console.log("________________________________________________________________________________");
 
 let answer;
 do {
-  prompt("Welcome to Rock, Paper, Scissors, Lizard, Spock! 🎰 You have to play 5 rounds.");
-  console.log("________________________________________________________________________________");
-
+  let gameScores = {
+    humanCount : 0,
+    computerCount : 0,
+    ties : 0
+  };
   for (let index = 0; index < 5; index++) {
 
+    prompt(`Current score:\n🤴 Human: ${gameScores.humanCount}; 💻 Computer: ${gameScores.computerCount}; Ties: ${gameScores.ties}.`);
+
     prompt(`Round ${index + 1} -- Choose one:\n${appendExplanation(VALID_CHOICES).join(';\n')}`);
-    let choice = readline.question();
+    let choice = readline.question().toLowerCase();
 
     while (!getInnerArrIndex(VALID_CHOICES).includes(choice)) {
       prompt("That's not a valid choice");
-      choice = readline.question();
+      choice = readline.question().toLowerCase();
     }
 
     let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
     let computerChoice = VALID_CHOICES[randomIndex][0];
 
 
-    prompt(`You chose ${choice}, computer chose ${computerChoice}`);
+    prompt(`You chose ${returnIndexVal(choice, VALID_CHOICES)}, computer chose ${returnIndexVal(computerChoice, VALID_CHOICES)}`);
 
-    let roundWinner = returnWinner(choice, computerChoice);
+    let roundWinner = returnWinner((returnIndexVal(choice, VALID_CHOICES)), returnIndexVal(computerChoice, VALID_CHOICES));
 
     if ((roundWinner === 'human') || (roundWinner === 'computer')) {
       prompt(`${roundWinner.toUpperCase()} wins this round!`);
     } else {
       prompt('A tie! Try again');
     }
+    addResult(roundWinner, gameScores);
 
-    addResult(roundWinner);
+    prompt("Tap 'Enter' to continue.")
+    readline.question();
+    console.clear();
   }
   console.log("________________________________________________________________________________");
-  prompt(`Human: ${humanCount}; Computer: ${computerCount}; ties: ${ties}.`);
-  displayWinner();
+  prompt(`Human: ${gameScores.humanCount}; Computer: ${gameScores.computerCount}; ties: ${gameScores.ties}.`);
+  displayWinner(gameScores);
   console.log("________________________________________________________________________________");
 
   prompt('Do you want to play again (y/n)?');
@@ -139,7 +138,8 @@ do {
     prompt('Please enter "y" or "n".');
     answer = readline.question().toLowerCase();
   }
-
+  gameScores = STARTING_SCORES;
+  console.clear();
 } while (answer[0] === 'y');
 
 
