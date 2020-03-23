@@ -15,15 +15,9 @@ const WINNING_COMBOS = {
   spock: ['rock', 'scissors'],
 };
 
-const STARTING_SCORES = {
-  humanCount : 0,
-  computerCount : 0,
-  ties : 0
-}
-
-function returnIndexVal(val, array) {
+function returnMoveName(val) {
   let explanation = '';
-  array.forEach(element => {
+  VALID_CHOICES.forEach(element => {
     if (element[0] === val) {
       explanation = element[1];
     }
@@ -43,12 +37,12 @@ function appendExplanation(arr) {
   return newArr;
 }
 
-function getInnerArrIndex(arr) {
+function validate(choice) {
   let newArr = [];
-  arr.forEach(element => {
+  VALID_CHOICES.forEach(element => {
     newArr.push(element[0]);
   });
-  return newArr;
+  return newArr.includes(choice);
 }
 
 
@@ -66,20 +60,20 @@ function returnWinner(choice, computerChoice) {
   }
 }
 
-function addResult(str, obj) {
-  if (str === 'human') {
-    obj.humanCount += 1;
-  } else if (str === 'computer') {
-    obj.computerCount += 1;
-  } else if (str === 'tie') {
-    obj.ties += 1;
+function addResult(winner, scores) {
+  if (winner === 'human') {
+    scores.humanCount += 1;
+  } else if (winner === 'computer') {
+    scores.computerCount += 1;
+  } else if (winner === 'tie') {
+    scores.ties += 1;
   }
 }
 
-function displayWinner(obj) {
-  if (obj.humanCount > obj.computerCount) {
+function displayWinner(scores) {
+  if (scores.humanCount > scores.computerCount) {
     prompt('You win! 😎🥳');
-  } else if (obj.humanCount < obj.computerCount) {
+  } else if (scores.humanCount < scores.computerCount) {
     prompt('Ugh-ho... Machine wins. 😔');
   } else {
     prompt('Tie?! For reals?? 😕');
@@ -94,16 +88,17 @@ do {
   let gameScores = {
     humanCount : 0,
     computerCount : 0,
-    ties : 0
+    ties : 0,
+    round : 0
   };
-  for (let index = 0; index < 5; index++) {
+  while ((gameScores.humanCount !== 5) && (gameScores.computerCount !== 5)) {
 
     prompt(`Current score:\n🤴 Human: ${gameScores.humanCount}; 💻 Computer: ${gameScores.computerCount}; Ties: ${gameScores.ties}.`);
 
-    prompt(`Round ${index + 1} -- Choose one:\n${appendExplanation(VALID_CHOICES).join(';\n')}`);
+    prompt(`Round ${gameScores.round + 1} -- Choose one:\n${appendExplanation(VALID_CHOICES).join(';\n')}`);
     let choice = readline.question().toLowerCase();
 
-    while (!getInnerArrIndex(VALID_CHOICES).includes(choice)) {
+    while (!validate(choice)) {
       prompt("That's not a valid choice");
       choice = readline.question().toLowerCase();
     }
@@ -112,9 +107,10 @@ do {
     let computerChoice = VALID_CHOICES[randomIndex][0];
 
 
-    prompt(`You chose ${returnIndexVal(choice, VALID_CHOICES)}, computer chose ${returnIndexVal(computerChoice, VALID_CHOICES)}`);
+    prompt(`You chose ${returnMoveName(choice)}, computer chose ${returnMoveName(computerChoice)}`);
 
-    let roundWinner = returnWinner((returnIndexVal(choice, VALID_CHOICES)), returnIndexVal(computerChoice, VALID_CHOICES));
+    let roundWinner = returnWinner((returnMoveName(choice)),
+      returnMoveName(computerChoice));
 
     if ((roundWinner === 'human') || (roundWinner === 'computer')) {
       prompt(`${roundWinner.toUpperCase()} wins this round!`);
@@ -123,7 +119,7 @@ do {
     }
     addResult(roundWinner, gameScores);
 
-    prompt("Tap 'Enter' to continue.")
+    prompt("Tap 'Enter' to continue.");
     readline.question();
     console.clear();
   }
@@ -138,7 +134,7 @@ do {
     prompt('Please enter "y" or "n".');
     answer = readline.question().toLowerCase();
   }
-  gameScores = STARTING_SCORES;
+
   console.clear();
 } while (answer[0] === 'y');
 
